@@ -12,63 +12,22 @@
 			'password' => $_POST['password']
 	);
 	
-	$jsonToSend = json_encode($userData);
+	$result = makeApiCall($userApiUrl, $oauthToken, "POST", $userData);
 	
-	$ch = curl_init($userApiUrl);
-	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonToSend);
-	curl_setopt($ch, CURLOPT_HEADER, 1);
+	$success = FALSE;
 	
-	// SSL_VERIFYIER == false allows self-signed certificates.  You should remove the following 2 lines in a production environment
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-	
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-	'Content-Type: application/json',
-	'Accept: application/json',
-	'Authorization: Bearer ' . $oauthToken)
-	);
-	$result = curl_exec($ch);
-	
-	$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	$message = '';
-	$errorMsg = '';
 	$newUserId = '';
-	if($http_status == 201) {
-		// 201 means created, which is success for add user
-		$message = "<p>Success creating user</p>";
-		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$headerpart = substr($result, 0, $header_size);
-		$body = substr($result, $header_size);
-		$headers = http_parse_headers($headerpart);
-		foreach($headers as $key=>$header) {
-			if($key == 'Location') {
-				$urlParts = explode('/', $header);  // intermediate value for STRICT compliance
+	
+	if($result['http_status_code'] == 201) {
+		// 201 means success for an add
+		$success = TRUE;
+		foreach($result['response_headers'] as $key => $header) {
+			if(strtoupper($key) == 'LOCATION') {
+				$urlParts = explode('/', $header);
 				$newUserId = array_pop($urlParts);
-				$message .= '<p>New User ID : ' . $newUserId . '</p>';
 			}
 		}
-	} else if(!$result) {
-		$errorMsg = curl_error($ch);
-	} else {
-		try {
-			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-			$headerpart = substr($result, 0, $header_size);
-			$body = substr($result, $header_size);
-			$error = json_decode($body);
-			if($error->fieldErrors) {
-				$errorMsg = print_r((array)$error->fieldErrors, true);
-			} else {
-				$errorMsg= print_r(json_decode($body), true);
-			}
-		} catch(Exception $e) {
-			$errorMsg = $e->getMessage();
-		}
-		
 	}
-	curl_close($ch);	
-
 ?>
 <html>
 <head><title>Add User Result</title>
@@ -79,21 +38,60 @@
 		<div class="span-24">
 			<h2>Add User Results</h2>
 		</div>
-		<?php if($errorMsg) { ?>
+		<?php if($success) { ?>
 		<div class="span-24">
-			<div class="error"><p>Create User was not successful</p><pre> <?php echo $errorMsg; ?></pre></div>
+			<div class="success">
+			<p>User was successfully created</p>
+			<?php if($newUserId) { ?>
+			<p>New user ID is <?php echo $newUserId; ?></p>
+			<p>Lookup up new user using a <a href="getuser-process.php?id=<?php echo $newUserId ?>">GetUser API call</a></p>
+			<?php } ?>
+			</div>
 		</div>
-		<?php } ?>
-		<?php if($message) { ?>
+		<?php } else {  // not success ?>
 		<div class="span-24">
-			<div class="success"><?php echo $message; ?></div>
+			<div class="error">
+			<p>User creation was NOT successful</p>
+			<?php if(isset($result['error'])) {?>
+			<p>Error: <?php echo $result['error']; ?></p>
+			<?php } ?>
+			<?php if(isset($result['error_description'])) {?>
+			<p>Error Description: <?php echo $result['error_description']; ?></p>
+			<?php } ?>
+			<?php if(isset($result['errors'])) {?>
+			<p>Errors</p>
+			<p>
+			<ul>
+			<?php foreach($result['errors'] as $errno => $errordesc) { ?>
+			<li><?php echo $errordesc; ?></li>
+			<?php } ?>
+			</ul>
+			</p>
+			<?php } ?>			
+			<?php if(isset($result['fieldErrors'])) {?>
+			<p>Field Errors</p>
+			<p>
+			<ul>
+			<?php foreach($result['fieldErrors'] as $field => $fieldError) { ?>
+			<li><?php echo $field . ' : ' . $fieldError; ?></li>
+			<?php } ?>
+			</ul>
+			</p>
+			<?php } ?>
+			</div>
 		</div>
-		<?php } ?>
+		<?php } // end not success ?>
 		<div class="span-24">
 		<p>
 			<a href="adduser-start.php">Back to the Add User Start page</a>
 		</p>
 		</div>
+		<hr>		
+		<div class="span-24">
+			<p>Raw Data</p>
+			<pre><?php print_r($result); ?></pre>
+		</div>
+
 	</div>
 </body>
 </html>

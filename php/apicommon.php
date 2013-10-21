@@ -1,7 +1,7 @@
 <?php
 
 function makeApiCall($url, $token, $method, $dataToSend) {
-	$result = array();
+	$return = array();
 	
 	if(strtoupper($method) == 'GET') {
 		if($dataToSend) {
@@ -9,7 +9,7 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 		}
 	}
 	
-	$ch = curl_init($userApiUrl);
+	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 	curl_setopt($ch, CURLOPT_HEADER, 1);
 	if(strtoupper($method) == 'POST') {
@@ -20,7 +20,7 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 	
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  // since we are separating the headers and body anyway
 	
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'Content-Type: application/json',
@@ -28,11 +28,50 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 		'Authorization: Bearer ' . $token)
 	);
 	
-	
+	$result = curl_exec($ch);
+	$return['http_status_code'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	if($result === FALSE) {
+		$return['error'] = curl_error($ch);
+	} else {
+		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$headerpart = substr($result, 0, $header_size);
+		$body = substr($result, $header_size);
+		$return['response_headers'] = http_parse_headers($headerpart);
+		
+		if($body) {
+			try {
+				$bodyJson = json_decode($body);
+				$return['body'] = $bodyJson;
+				if(isset($bodyJson->error)) {
+					$return['error'] = $bodyJson->error;
+				}
+				if(isset($bodyJson->error_description)) {
+					$return['error_description'] = $bodyJson->error_description;
+				}
+				if(isset($bodyJson->errors)) {
+					$return['errors'] = (array)$bodyJson->errors;
+				}
+				if(isset($bodyJson->fieldErrors)) {
+					$return['fieldErrors'] = (array)$bodyJson->fieldErrors;
+				}
+				if(isset($bodyJson->results)) {
+					$return['results'] = (array)$bodyJson->results;
+				}
+				if(isset($bodyJson->previous)) {
+					$return['previous'] = $bodyJson->previous;
+				}
+				if(isset($bodyJson->next)) {
+					$return['next'] = $bodyJson->next;
+				}
+			} catch(Exception $e) {
+				$return['bodyexception'] = $e;
+			}
+		}
+	}
 	
 	curl_close($ch);
 	
-	return $result;
+	return $return;
 }
 
 function http_parse_headers( $header )
