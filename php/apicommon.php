@@ -29,6 +29,7 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 	);
 	
 	$result = curl_exec($ch);
+	//$return['curl_info'] = curl_getinfo($ch);
 	$return['http_status_code'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	if($result === FALSE) {
 		$return['error'] = curl_error($ch);
@@ -72,6 +73,22 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 	curl_close($ch);
 	
 	return $return;
+}
+
+function print_user($user) {
+	$userArray = $user;
+	if(!is_array($userArray)) {
+		$userArray = (array)$user;
+	}
+	echo '<p>';
+	foreach($userArray as $field=>$value) {
+		if($field == 'id') {
+			echo $field . ' => <a href="getuser-process.php?id=' . $value . '" title="View with GetUser">' . $value . '</a><br/>';
+		} else {
+			echo $field . ' => ' . $value . '<br/>';
+		}
+	}
+	echo '</p>';
 }
 
 function http_parse_headers( $header )

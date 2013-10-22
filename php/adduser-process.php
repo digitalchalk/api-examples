@@ -86,10 +86,13 @@
 			<a href="adduser-start.php">Back to the Add User Start page</a>
 		</p>
 		</div>
+		
 		<hr>		
 		<div class="span-24">
-			<p>Raw Data</p>
+			<p>Raw Data <a href="javascript:void(0);" onclick="$('#rawdata').toggle();">Toggle</a></p>
+			<div id="rawdata" style="display:none">
 			<pre><?php print_r($result); ?></pre>
+			</div>
 		</div>
 
 	</div>

@@ -7,6 +7,7 @@
 	$id = '';
 	$email = '';
 	$offset = '';
+	$searchResults = '';
 	
 	if(isset($_REQUEST['id'])) {
 		$id = $_REQUEST['id'];
@@ -37,7 +38,7 @@
 	
 	$success = FALSE;
 	
-	if($result['http_status_code'] = 200) {
+	if($result['http_status_code'] == 200) {
 		$success = TRUE;
 		if(isset($result['results'])) {
 			$searchResults = (array)$result['results'];
@@ -45,14 +46,19 @@
 			$searchResults = array();
 			if(isset($result['body'])) {
 				
-				$searchResults = (array)$result['body'];
+				$searchResults = array();
+				$searchResults[] = $result['body'];
 			}
 		}
+	}
+	$numResults = 0;
+	if(is_array($searchResults)) {
+		$numResults = count($searchResults);
 	}
 	
 ?>
 <html>
-<head><title>Add User Result</title>
+<head><title>Get User Result</title>
 <?php  include('inccss.php'); ?>
 </head>
 <body>
@@ -67,15 +73,22 @@
 			</div>
 		</div>
 
-		<div class="span-4"><p>Results</p></div>
+		<div class="span-4"><p>Results (<?php echo $numResults; ?>)</p></div>
 		<div class="span-20 last">
+			<?php if(is_array($searchResults)) {
+				    foreach($searchResults as $resNum=>$searchResult) {
+			?>
+			<p><?php print_user($searchResult); ?></p>
+			<?php 	}  // end foreach?>
+			<?php } else { // not an array ?>
 			<pre><?php print_r($searchResults); ?></pre>
+			<?php } ?>
 		</div>
 
 		<?php } else {  // not success ?>
 		<div class="span-24">
 			<div class="error">
-			<p>User creation was NOT successful</p>
+			<p>GetUser was NOT successful</p>
 			<?php if(isset($result['error'])) {?>
 			<p>Error: <?php echo $result['error']; ?></p>
 			<?php } ?>
@@ -108,8 +121,10 @@
 		
 		<hr>		
 		<div class="span-24">
-			<p>Raw Data</p>
+			<p>Raw Data <a href="javascript:void(0);" onclick="$('#rawdata').toggle();">Toggle</a></p>
+			<div id="rawdata" style="display:none">
 			<pre><?php print_r($result); ?></pre>
+			</div>
 		</div>
 	</div>
 </body>
