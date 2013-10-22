@@ -1,6 +1,6 @@
 <?php
 
-function makeApiCall($url, $token, $method, $dataToSend) {
+function makeApiCall($url, $token, $method, $dataToSend = null) {
 	$return = array();
 	
 	if(strtoupper($method) == 'GET') {
@@ -12,9 +12,11 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 	curl_setopt($ch, CURLOPT_HEADER, 1);
-	if(strtoupper($method) == 'POST') {
-		$jsonToSend = json_encode($dataToSend);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonToSend);
+	if(strtoupper($method) == 'POST' || strtoupper($method) == "PUT") {
+		if($dataToSend) {
+			$jsonToSend = json_encode($dataToSend);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonToSend);
+		}
 	}
 	// SSL_VERIFYIER == false allows self-signed certificates.  You should remove the following 2 lines in a production environment
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -94,15 +96,21 @@ function print_user($user) {
 	if(!is_array($userArray)) {
 		$userArray = (array)$user;
 	}
-	echo '<p>';
+	
 	foreach($userArray as $field=>$value) {
 		if($field == 'id') {
 			echo $field . ' => <a href="getuser-process.php?id=' . $value . '" title="View with GetUser">' . $value . '</a><br/>';
+		} else if (is_array($value)) {
+			echo $field . ' => ' . implode(' ', $value) . '<br/>';
 		} else {
 			echo $field . ' => ' . $value . '<br/>';
 		}
 	}
-	echo '</p>';
+	if(isset($userArray['id'])) {
+		return $userArray['id'];
+	} else {
+		return null;
+	}
 }
 
 function http_parse_headers( $header )

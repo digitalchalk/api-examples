@@ -38,7 +38,7 @@
 		exit("One of id or email must be specified as a parameter");
 	}
 	
-	$result = makeApiCall($userApiUrl, $oauthToken, 'GET', null);
+	$result = makeApiCall($userApiUrl, $oauthToken, 'GET');
 	
 	$success = FALSE;
 	
@@ -64,6 +64,16 @@
 <html>
 <head><title>Get User Result</title>
 <?php  include('inccss.php'); ?>
+<script type="text/javascript">
+
+function deleteUser(userId) {
+	alertify.confirm("Delete user?", function(e) {
+		if(e) {
+			window.location.href = 'deleteuser-process.php?id=' + userId;
+		} 
+	});
+}
+</script>
 </head>
 <body>
 	<div class="container">
@@ -89,7 +99,7 @@
 					$prevParms['offset'] = $result['prevOffset'];
 					$prevLinkParms = http_build_query($prevParms); 			
 			?>
-			<p><a href="getuser-process.php?<?php echo $prevLinkParms; ?>"><< Previous Page</a></p>
+			<p><a href="getuser-process.php?<?php echo $prevLinkParms; ?>">Previous Page</a></p>
 			<?php } ?>
 			<?php 
 				if(isset($result['nextOffset'])) {
@@ -97,18 +107,24 @@
 					$nextParms['offset'] = $result['nextOffset'];
 					$nextLinkParms = http_build_query($nextParms); 			
 			?>
-			<p><a href="getuser-process.php?<?php echo $nextLinkParms; ?>">Next Page >></a></p>
+			<p><a href="getuser-process.php?<?php echo $nextLinkParms; ?>">Next Page</a></p>
 			<?php } ?>
 		</div>
 		<div class="span-20 last">
 			<?php if(is_array($searchResults)) {
 				    foreach($searchResults as $resNum=>$searchResult) {
 			?>
-			<p><?php print_user($searchResult); ?></p>
+			<p id="user<?php echo $resNum; ?>"><?php $userId = print_user($searchResult); ?>
+			<?php if($userId) { ?>
+			<a href="javascript:void(0);" onclick="deleteUser('<?php echo $userId; ?>');">Delete this user</a></p>
+			<?php  } // if userid ?>
 			<?php 	}  // end foreach?>
 			<?php if(count($searchResults) == 0) { ?>
 				<p><b>No Results Found</b></p>
 			<?php } ?>
+			<?php if(count($searchResults == 1)) { ?>
+			<p>Edit tags:</p>
+			<?php } // end count == 1 ?>
 			<?php } else { // not an array ?>
 			<pre><?php print_r($searchResults); ?></pre>
 			<?php } ?>
@@ -117,33 +133,31 @@
 		<?php } else {  // not success ?>
 		<div class="span-24">
 			<div class="error">
-			<p>GetUser was NOT successful</p>
-			<?php if(isset($result['error'])) {?>
-			<p>Error: <?php echo $result['error']; ?></p>
-			<?php } ?>
-			<?php if(isset($result['error_description'])) {?>
-			<p>Error Description: <?php echo $result['error_description']; ?></p>
-			<?php } ?>
-			<?php if(isset($result['errors'])) {?>
-			<p>Errors</p>
-			<p>
-			<ul>
-			<?php foreach($result['errors'] as $errno => $errordesc) { ?>
-			<li><?php echo $errordesc; ?></li>
-			<?php } ?>
-			</ul>
-			</p>
-			<?php } ?>			
-			<?php if(isset($result['fieldErrors'])) {?>
-			<p>Field Errors</p>
-			<p>
-			<ul>
-			<?php foreach($result['fieldErrors'] as $field => $fieldError) { ?>
-			<li><?php echo $field . ' : ' . $fieldError; ?></li>
-			<?php } ?>
-			</ul>
-			</p>
-			<?php } ?>
+				<p>GetUser was NOT successful</p>
+				<?php if(isset($result['error'])) {?>
+				<p>Error: <?php echo $result['error']; ?></p>
+				<?php } ?>
+				<?php if(isset($result['error_description'])) {?>
+				<p>Error Description: <?php echo $result['error_description']; ?></p>
+				<?php } ?>
+				<?php if(isset($result['errors'])) {?>
+				<p>Errors</p>
+				
+				<ul>
+				<?php foreach($result['errors'] as $errno => $errordesc) { ?>
+				<li><?php echo $errordesc; ?></li>
+				<?php } ?>
+				</ul>
+				
+				<?php } ?>			
+				<?php if(isset($result['fieldErrors'])) {?>
+				<p>Field Errors</p>			
+				<ul>
+				<?php foreach($result['fieldErrors'] as $field => $fieldError) { ?>
+				<li><?php echo $field . ' : ' . $fieldError; ?></li>
+				<?php } ?>
+				</ul>
+				<?php } ?>
 			</div>
 		</div>
 		<?php } // end not success ?>
