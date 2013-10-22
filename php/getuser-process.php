@@ -9,6 +9,8 @@
 	$offset = '';
 	$searchResults = '';
 	
+	parse_str($_SERVER['QUERY_STRING'], $parametersIn);
+	
 	if(isset($_REQUEST['id'])) {
 		$id = $_REQUEST['id'];
 	}
@@ -32,6 +34,8 @@
 		}
 		$encoded = http_build_query($dataToSend);
 		$userApiUrl .= '?' . $encoded;
+	} else {
+		exit("One of id or email must be specified as a parameter");
 	}
 	
 	$result = makeApiCall($userApiUrl, $oauthToken, 'GET', null);
@@ -73,13 +77,38 @@
 			</div>
 		</div>
 
-		<div class="span-4"><p>Results (<?php echo $numResults; ?>)</p></div>
+		<div class="span-4">
+			<p>Results (<?php echo $numResults; ?><?php 
+				if(isset($result['prevOffset']) || isset($result['nextOffset'])) {
+					echo '+';
+				}
+			?>)</p>
+			<?php 
+				if(isset($result['prevOffset'])) {
+					$prevParms = $parametersIn;
+					$prevParms['offset'] = $result['prevOffset'];
+					$prevLinkParms = http_build_query($prevParms); 			
+			?>
+			<p><a href="getuser-process.php?<?php echo $prevLinkParms; ?>"><< Previous Page</a></p>
+			<?php } ?>
+			<?php 
+				if(isset($result['nextOffset'])) {
+					$nextParms = $parametersIn;
+					$nextParms['offset'] = $result['nextOffset'];
+					$nextLinkParms = http_build_query($nextParms); 			
+			?>
+			<p><a href="getuser-process.php?<?php echo $nextLinkParms; ?>">Next Page >></a></p>
+			<?php } ?>
+		</div>
 		<div class="span-20 last">
 			<?php if(is_array($searchResults)) {
 				    foreach($searchResults as $resNum=>$searchResult) {
 			?>
 			<p><?php print_user($searchResult); ?></p>
 			<?php 	}  // end foreach?>
+			<?php if(count($searchResults) == 0) { ?>
+				<p><b>No Results Found</b></p>
+			<?php } ?>
 			<?php } else { // not an array ?>
 			<pre><?php print_r($searchResults); ?></pre>
 			<?php } ?>

@@ -60,9 +60,23 @@ function makeApiCall($url, $token, $method, $dataToSend) {
 				}
 				if(isset($bodyJson->previous)) {
 					$return['previous'] = $bodyJson->previous;
+					$prevParts = explode('?', $bodyJson->previous);
+					if(count($prevParts) > 1) {
+						parse_str($prevParts[1], $qarray);
+						if(array_key_exists("offset", $qarray)) {
+							$return['prevOffset'] = $qarray['offset'];
+						}
+					}
 				}
 				if(isset($bodyJson->next)) {
 					$return['next'] = $bodyJson->next;
+					$nextParts = explode('?', $bodyJson->next);
+					if(count($nextParts) > 1) {
+						parse_str($nextParts[1], $qarray);
+						if(array_key_exists("offset", $qarray)) {
+							$return['nextOffset'] = $qarray['offset'];
+						}
+					}
 				}
 			} catch(Exception $e) {
 				$return['bodyexception'] = $e;

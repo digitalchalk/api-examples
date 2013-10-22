@@ -10,6 +10,7 @@
 	<p>
 	<ul>
 	<li><a href="adduser-start.php">Add User</a></li>
+	<li><a href="getuser-byemail.php">Get User By Email</a>
 	</ul>
 	</p>
 	</div>
