@@ -83,7 +83,7 @@
 		<?php } // end not success ?>
 		<div class="span-24">
 		<p>
-			<a href="adduser-start.php">Back to the Add User Start page</a>
+			<a href="javascript:void(0);" onclick="window.history.back();">Back</a><br/><a href="index.php">Back to home</a>
 		</p>
 		</div>
 		

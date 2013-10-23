@@ -35,7 +35,12 @@
 		$encoded = http_build_query($dataToSend);
 		$userApiUrl .= '?' . $encoded;
 	} else {
-		exit("One of id or email must be specified as a parameter");
+		// it is a get all
+		if($offset) {
+			$dataToSend['offset'] = $offset;
+			$encoded = http_build_query($dataToSend);
+			$userApiUrl .= '?' . $encoded;
+		}
 	}
 	
 	$result = makeApiCall($userApiUrl, $oauthToken, 'GET');
@@ -72,6 +77,10 @@ function deleteUser(userId) {
 			window.location.href = 'deleteuser-process.php?id=' + userId;
 		} 
 	});
+}
+
+function editUser(userId) {
+	window.location.href = 'edituser-start.php?id=' + userId;
 }
 </script>
 </head>
@@ -116,15 +125,12 @@ function deleteUser(userId) {
 			?>
 			<p id="user<?php echo $resNum; ?>"><?php $userId = print_user($searchResult); ?>
 			<?php if($userId) { ?>
-			<a href="javascript:void(0);" onclick="deleteUser('<?php echo $userId; ?>');">Delete this user</a></p>
+			<button onclick="editUser('<?php echo $userId; ?>');">Edit User</button>&nbsp;<button onclick="deleteUser('<?php echo $userId; ?>');">Delete User</button>
 			<?php  } // if userid ?>
 			<?php 	}  // end foreach?>
 			<?php if(count($searchResults) == 0) { ?>
 				<p><b>No Results Found</b></p>
 			<?php } ?>
-			<?php if(count($searchResults == 1)) { ?>
-			<p>Edit tags:</p>
-			<?php } // end count == 1 ?>
 			<?php } else { // not an array ?>
 			<pre><?php print_r($searchResults); ?></pre>
 			<?php } ?>
@@ -161,7 +167,11 @@ function deleteUser(userId) {
 			</div>
 		</div>
 		<?php } // end not success ?>
-		
+		<div class="span-24">
+			<p>
+				<a href="javascript:void(0);" onclick="window.history.back();">Back</a><br/><a href="index.php">Back to home</a>
+			</p>
+		</div>
 		<hr>		
 		<div class="span-24">
 			<p>Raw Data <a href="javascript:void(0);" onclick="$('#rawdata').toggle();">Toggle</a></p>

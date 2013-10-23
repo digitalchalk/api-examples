@@ -9,8 +9,9 @@
 	<h2>API v5 PHP Examples Home</h2>
 	<p>
 	<ul>
-	<li><a href="adduser-start.php">Add User</a></li>
+	<li><a href="getuser-process.php">List All Users</a> (includes Edit and Delete User)</li>
 	<li><a href="getuser-byemail.php">Get User By Email</a>
+	<li><a href="adduser-start.php">Add User</a></li>
 	</ul>
 	</p>
 	</div>
