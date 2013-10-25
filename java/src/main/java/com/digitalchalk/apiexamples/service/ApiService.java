@@ -63,190 +63,73 @@ public class ApiService {
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	public ApiResult apiPut(String path, Object putData) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient httpClient = null;
-		try {			
-			httpClient = makeHttpClient();
-			
-			URI uri = makeUri(path,null);
-			
-			HttpPut httpPut = new HttpPut(uri);
-			httpPut.addHeader("Accept", "application/json");
-			httpPut.addHeader("Content-type", "application/json");
-			httpPut.addHeader("Authorization", "Bearer " + apiConfig.getApiToken());
-			if(putData != null) {
-				try {
-					String jsonData = mapper.writeValueAsString(putData);
-					httpPut.setEntity(new StringEntity(jsonData));
-				} catch(JsonProcessingException jpex) {
-					jpex.printStackTrace();
-				}
-			}
-			
-			response = httpClient.execute(httpPut);
-			
-			return parseApiResult(response);
-			
-		} catch(Exception e) {
-			
-			e.printStackTrace();
-			ApiResult errResult = new ApiResult();
-			if(response != null) {
-				errResult.setStatusCode(response.getStatusLine().getStatusCode());
-			} else {
-				errResult.setStatusCode(0);
-			}
-			errResult.setError(e.getClass().getSimpleName());
-			errResult.setErrorDescription(e.getMessage());
-			return errResult;
-			
-		} finally {
 
-			if(response != null) {
-				try {
-					response.close();
-				} catch(Exception ignoreMe) {
-					
-				}
-			}
-			
-			if(httpClient != null) {
-				try {
-					httpClient.close();
-				} catch(Exception ignoreMe1) {
-					
-				}
-			}
-		}
+		URI uri = makeUri(path,null);
+		
+		HttpPut httpPut = new HttpPut(uri);
+		
+		return executeRequest(httpPut, putData);
 
 	}
 	
 	public ApiResult apiPost(String path, Object postData) {
+			
+		URI uri = makeUri(path,null);
+		
+		HttpPost httpPost = new HttpPost(uri);
+		
+		return executeRequest(httpPost, postData);
+	}
+	
+	public ApiResult apiDelete(String path) {
+
+			
+		URI uri = makeUri(path, null);
+		
+		HttpDelete httpDelete = new HttpDelete(uri);
+		
+		return executeRequest(httpDelete, null);
+						
+	}
+
+	
+	public ApiResult apiGet(String path, Map<String,String> parameters) {
+			
+		URI uri = makeUri(path, parameters);
+		
+		HttpGet httpGet = new HttpGet(uri);
+		
+		return executeRequest(httpGet, null);
+			
+	}
+	
+	/**
+	 * 
+	 * Executes the httpRequest on the API and returns an ApiResult
+	 * 
+	 * @param request - the GET, POST, PUT, or DELETE to execute
+	 * @param outData - data to write on stdout with the request (usually only POST or PUT have this)
+	 * @return the ApiResult object
+	 */
+	private ApiResult executeRequest(HttpUriRequest request, Object outData) {
 		CloseableHttpResponse response = null;
 		CloseableHttpClient httpClient = null;
 		try {			
 			httpClient = makeHttpClient();
 			
-			URI uri = makeUri(path,null);
-			
-			HttpPost httpPost = new HttpPost(uri);
-			httpPost.addHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			httpPost.addHeader("Authorization", "Bearer " + apiConfig.getApiToken());
-			if(postData != null) {
+			if(outData != null && request instanceof HttpEntityEnclosingRequest) {
 				try {
-					String jsonData = mapper.writeValueAsString(postData);
-					httpPost.setEntity(new StringEntity(jsonData));
+					String jsonData = mapper.writeValueAsString(outData);
+					((HttpEntityEnclosingRequest)request).setEntity(new StringEntity(jsonData));
 				} catch(JsonProcessingException jpex) {
 					jpex.printStackTrace();
 				}
 			}
 			
-			response = httpClient.execute(httpPost);
-			
-			return parseApiResult(response);
-			
-		} catch(Exception e) {
-			
-			e.printStackTrace();
-			ApiResult errResult = new ApiResult();
-			if(response != null) {
-				errResult.setStatusCode(response.getStatusLine().getStatusCode());
-			} else {
-				errResult.setStatusCode(0);
-			}
-			errResult.setError(e.getClass().getSimpleName());
-			errResult.setErrorDescription(e.getMessage());
-			return errResult;
-			
-		} finally {
-
-			if(response != null) {
-				try {
-					response.close();
-				} catch(Exception ignoreMe) {
-					
-				}
-			}
-			
-			if(httpClient != null) {
-				try {
-					httpClient.close();
-				} catch(Exception ignoreMe1) {
-					
-				}
-			}
-		}
-
-	}
-	
-	public ApiResult apiDelete(String path) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient httpClient = null;
-		try {			
-			httpClient = makeHttpClient();
-			
-			URI uri = makeUri(path, null);
-			
-			HttpDelete httpDelete = new HttpDelete(uri);
-						
-			httpDelete.addHeader("Accept", "application/json");
-			httpDelete.addHeader("Content-type", "application/json");
-			httpDelete.addHeader("Authorization", "Bearer " + apiConfig.getApiToken());
-			response = httpClient.execute(httpDelete);
-			
-			return parseApiResult(response);
-			
-		} catch(Exception e) {
-			
-			e.printStackTrace();
-			ApiResult errResult = new ApiResult();
-			if(response != null) {
-				errResult.setStatusCode(response.getStatusLine().getStatusCode());
-			} else {
-				errResult.setStatusCode(0);
-			}
-			errResult.setError(e.getClass().getSimpleName());
-			errResult.setErrorDescription(e.getMessage());
-			return errResult;
-			
-		} finally {
-
-			if(response != null) {
-				try {
-					response.close();
-				} catch(Exception ignoreMe) {
-					
-				}
-			}
-			
-			if(httpClient != null) {
-				try {
-					httpClient.close();
-				} catch(Exception ignoreMe1) {
-					
-				}
-			}
-		}
-	}
-
-	
-	public ApiResult apiGet(String path, Map<String,String> parameters) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient httpClient = null;
-		try {			
-			httpClient = makeHttpClient();
-			
-			URI uri = makeUri(path, parameters);
-			
-			HttpGet httpGet = new HttpGet(uri);
-			
-
-			
-			httpGet.addHeader("Accept", "application/json");
-			httpGet.addHeader("Content-type", "application/json");
-			httpGet.addHeader("Authorization", "Bearer " + apiConfig.getApiToken());
-			response = httpClient.execute(httpGet);
+			request.addHeader("Accept", "application/json");
+			request.addHeader("Content-type", "application/json");
+			request.addHeader("Authorization", "Bearer " + apiConfig.getApiToken());
+			response = httpClient.execute(request);
 			
 			return parseApiResult(response);
 			
@@ -341,18 +224,6 @@ public class ApiService {
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * Debug only
-	 */
-	private void dumpMap(Map<String,Object> toDump) {
-		if(toDump == null) {
-			return;
-		}
-		for(String key : toDump.keySet()) {
-			System.out.println(key + " => " + toDump.get(key));
-		}
 	}
 	
 	/**
