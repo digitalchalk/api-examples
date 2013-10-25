@@ -29,90 +29,40 @@
 
 package com.digitalchalk.apiexamples.model;
 
-import java.util.*;
+/**
+ *
+ */
+public class EditUserForm {
 
-public class ApiResult {
+	private String id;
+	private String firstName;
+	private String lastName;
+	private String email;
 	
-	private int statusCode;
-	
-	private String statusLine;
-	
-	private List<HashMap> results;
-
-	private String error;
-	
-	private String errorDescription;
-	
-	private String rawJson;
-	
-	private LinkedHashMap fieldErrors;
-	
-	private String locationId;
-	
-	public int getStatusCode() {
-		return statusCode;
+	public String getId() {
+		return id;
 	}
-
-	public void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
+	public void setId(String id) {
+		this.id = id;
 	}
-
-	public String getError() {
-		return error;
+	public String getFirstName() {
+		return firstName;
 	}
-
-	public void setError(String error) {
-		this.error = error;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
-
-	public String getErrorDescription() {
-		return errorDescription;
+	public String getLastName() {
+		return lastName;
 	}
-
-	public void setErrorDescription(String errorDescription) {
-		this.errorDescription = errorDescription;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
-
-	public String getRawJson() {
-		return rawJson;
+	public String getEmail() {
+		return email;
 	}
-
-	public void setRawJson(String rawJson) {
-		this.rawJson = rawJson;
-	}
-
-	public List<HashMap> getResults() {
-		return results;
-	}
-
-	public void setResults(List<HashMap> results) {
-		this.results = results;
-	}
-
-	public LinkedHashMap getFieldErrors() {
-		return fieldErrors;
-	}
-
-	public void setFieldErrors(LinkedHashMap fieldErrors) {
-		this.fieldErrors = fieldErrors;
-	}
-
-	public String getStatusLine() {
-		return statusLine;
-	}
-
-	public void setStatusLine(String statusLine) {
-		this.statusLine = statusLine;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	
-
 }

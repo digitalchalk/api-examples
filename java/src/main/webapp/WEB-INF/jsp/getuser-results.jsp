@@ -6,6 +6,19 @@
 <title>Get User(s) Result</title>
 <jsp:include page="/WEB-INF/jsp/common/inccss.jsp"/>
 </head>
+<script type="text/javascript">
+function deleteUser(userId) {
+	alertify.confirm("Delete user?", function(e) {
+		if(e) {
+			window.location.href = 'deleteuser.html?id=' + userId;
+		} 
+	});
+}
+
+function editUser(userId) {
+	window.location.href = 'edituser.html?id=' + userId;
+}
+</script>
 <body>
 	<div class="container">
 		<div class="span-24">
@@ -22,52 +35,24 @@
 			<p>Results (${fn:length(apiResult.results) })</p>
 		</div>
 		<div class="span-20 last">
-			<c:if test="${!empty apiResult.results }">
+			<c:choose>			
+			<c:when test="${!empty apiResult.results }">
 			<c:forEach items="${apiResult.results }" var="result">
 				<c:set var="user" value="${result }" scope="request"/>
 				<jsp:include page="/WEB-INF/jsp/common/showuser.jsp" flush="true"/>
 			</c:forEach>
-			</c:if>			
+			</c:when>
+			<c:otherwise>
+				<p>The API call was successful, but no results were found</p>
+			</c:otherwise>
+			</c:choose>			
 		</div>
 		</c:when>
 		<c:otherwise>
-		<div class="span-24">
-			<div class="error">
-			Error
-			<c:if test="${!empty apiResult.error }">
-			<br>${apiResult.error }
-			</c:if>
-			<c:if test="${!empty apiResult.errorDescription }">
-			<br>${apiResult.errorDescription }
-			</c:if>	
-			<c:if test="${!empty apiResult.fieldErrors }">
-			<br>Field Errors
-			<ul>
-			<c:forEach items="${apiResult.fieldErrors }" var="fieldError">
-				<li>${fieldError }</li>
-			</c:forEach>
-			</ul>
-			</c:if>				
-			</div>
-		</div>
+		<jsp:include page="/WEB-INF/jsp/common/errorblock.jsp" flush="true"/>	
 		</c:otherwise>
 		</c:choose>
-		<div class="span-24">
-			<p>
-				<a href="javascript:void(0);" onclick="window.history.back();">Back</a><br/><a href="<c:url value='index.html'/>">Back to home</a>
-			</p>
-		</div>
-		<hr>
-		<c:if test="${!empty apiResult.rawJson }">
-			<div class="span-24">
-				<p>Raw Data <a href="javascript:void(0);" onclick="$('#rawdata').toggle();">Toggle</a></p>
-				<div id="rawdata" style="display:none">
-				<p>Status Code: ${apiResult.statusCode }</p>
-				<pre>${apiResult.rawJson }</pre>
-				</div>
-			</div>
-		</c:if>
-
+		<jsp:include page="/WEB-INF/jsp/common/rawdatablock.jsp" flush="true"/>	
 	</div>
 </body>
 </html>

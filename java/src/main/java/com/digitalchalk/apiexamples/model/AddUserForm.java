@@ -29,90 +29,41 @@
 
 package com.digitalchalk.apiexamples.model;
 
-import java.util.*;
-
-public class ApiResult {
+/**
+ *
+ */
+public class AddUserForm {
 	
-	private int statusCode;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String password;
 	
-	private String statusLine;
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	
-	private List<HashMap> results;
-
-	private String error;
-	
-	private String errorDescription;
-	
-	private String rawJson;
-	
-	private LinkedHashMap fieldErrors;
-	
-	private String locationId;
-	
-	public int getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public String getErrorDescription() {
-		return errorDescription;
-	}
-
-	public void setErrorDescription(String errorDescription) {
-		this.errorDescription = errorDescription;
-	}
-
-	public String getRawJson() {
-		return rawJson;
-	}
-
-	public void setRawJson(String rawJson) {
-		this.rawJson = rawJson;
-	}
-
-	public List<HashMap> getResults() {
-		return results;
-	}
-
-	public void setResults(List<HashMap> results) {
-		this.results = results;
-	}
-
-	public LinkedHashMap getFieldErrors() {
-		return fieldErrors;
-	}
-
-	public void setFieldErrors(LinkedHashMap fieldErrors) {
-		this.fieldErrors = fieldErrors;
-	}
-
-	public String getStatusLine() {
-		return statusLine;
-	}
-
-	public void setStatusLine(String statusLine) {
-		this.statusLine = statusLine;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
 	
 
 }

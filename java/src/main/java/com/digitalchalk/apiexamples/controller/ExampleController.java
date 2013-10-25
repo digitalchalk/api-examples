@@ -55,13 +55,53 @@ public class ExampleController {
 	}
 	
 	@RequestMapping(value="adduser.html", method=RequestMethod.GET) 
-	public String addUserForm() {
+	public String addUserForm(ModelMap modelMap) {
+		AddUserForm addUserForm = new AddUserForm();
+		modelMap.addAttribute("addUserForm", addUserForm);
 		return "adduser-form";
 	}
 	
 	@RequestMapping(value="adduser.html", method=RequestMethod.POST)
-	public String addUserSubmit() {
+	public String addUserSubmit(@ModelAttribute("addUserForm") AddUserForm addUserForm, ModelMap modelMap) {		
+		ApiResult apiResult = apiService.apiPost("/dc/api/v5/users", addUserForm);
+		modelMap.addAttribute("apiResult", apiResult);
 		return "adduser-result";
+	}
+	
+	@RequestMapping(value="edituser.html", method=RequestMethod.GET)
+	public String editUserForm(@RequestParam(required=true) String id, ModelMap modelMap) {
+		ApiResult apiResult = apiService.apiGet("/dc/api/v5/users/" + id, null);
+		if(apiResult.getStatusCode() != 200) {
+			modelMap.addAttribute("id", id);
+			return "edituser-error";
+		} else {
+			@SuppressWarnings("unchecked")
+			Map<String,Object> userToEdit = apiResult.getResults().get(0);
+			EditUserForm editUserForm = new EditUserForm();
+			editUserForm.setId(id);
+			editUserForm.setFirstName((String)userToEdit.get("firstName"));
+			editUserForm.setLastName((String)userToEdit.get("lastName"));
+			editUserForm.setEmail((String)userToEdit.get("email"));
+			
+			modelMap.addAttribute("editUserForm", editUserForm);
+			
+			return "edituser-form";
+		}
+	}
+	
+	@RequestMapping(value="edituser.html", method=RequestMethod.POST)
+	public String editUserSubmit(@ModelAttribute("editUserForm") EditUserForm editUserForm, ModelMap modelMap) {
+		ApiResult apiResult = apiService.apiPut("/dc/api/v5/users/" + editUserForm.getId(), editUserForm);
+		modelMap.addAttribute("apiResult", apiResult);
+		modelMap.addAttribute("id", editUserForm.getId());
+		return "edituser-result";
+	}
+	
+	@RequestMapping(value="deleteuser.html")
+	public String deleteUser(@RequestParam(required=true) String id, ModelMap modelMap) {
+		ApiResult apiResult = apiService.apiDelete("/dc/api/v5/users/" + id);
+		modelMap.addAttribute("apiResult", apiResult);
+		return "deleteuser-results";
 	}
 	
 	@RequestMapping(value="getallusers.html")

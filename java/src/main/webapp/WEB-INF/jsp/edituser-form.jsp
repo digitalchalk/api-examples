@@ -4,17 +4,17 @@
 <%@ taglib prefix="spf" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-<title>Add User</title>
+<title>Edit User</title>
 <jsp:include page="/WEB-INF/jsp/common/inccss.jsp"/>
 </head>
 <body>
 	<div class="container">
 		<div class="span-24">
-			<h2>Add User</h2>
+			<h2>Edit User</h2>
 		</div>
 		<div class="span-24">
 			<div>
-				<spf:form commandName="addUserForm" method="POST" cssClass="inline.form">
+				<spf:form commandName="editUserForm" method="POST" cssClass="inline.form">					
 					<fieldset>
 					<legend>Add User</legend>
 					<p>
@@ -29,13 +29,9 @@
 					
 					<p>
 					<label for="email">Email</label><br/>
-					<spf:input path="email" cssClass="email"/>
+					<spf:input path="email" cssClass="text"/>
 					</p>					
-					
-					<p>
-					<label for="password">Password</label><br/>
-					<spf:password path="password" cssClass="password" />
-					</p>
+
 					<p>
 					<input type="submit" value="Submit"/>
 					</p>
