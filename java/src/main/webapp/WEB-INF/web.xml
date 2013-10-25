@@ -11,4 +11,6 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 	
+	<!-- Most of this app is configured through annotations.  See com.digitalchalk.apiexamples.config.DispatcherServletInitializer.java -->
+	
 </web-app>

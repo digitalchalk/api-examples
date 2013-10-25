@@ -43,6 +43,11 @@
 				</spf:form>
 			</div>
 		</div>
+		<div class="span-24">
+			<p>
+				<a href="javascript:void(0);" onclick="window.history.back();">Back</a><br/><a href="<c:url value='index.html'/>">Home</a>
+			</p>
+		</div>		
 	</div>
 </body>
 </html>

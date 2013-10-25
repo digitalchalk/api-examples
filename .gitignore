@@ -1,1 +1,8 @@
 .buildpath
+.#webclasspath
+java/.project
+java/.classpath
+java/.settings
+java/.tomcatplugin
+java/work
+java/target
