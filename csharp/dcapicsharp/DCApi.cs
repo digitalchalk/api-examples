@@ -26,6 +26,8 @@ namespace dcapicsharp
                 (
                    delegate { return true; }
                 );
+                
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         public void setOutProtocol(String newProtocol)
